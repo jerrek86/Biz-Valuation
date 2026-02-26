@@ -148,6 +148,8 @@ body{font-family:'Open Sans',sans-serif;background:var(--off-white);color:var(--
 .vbn-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:12px 16px}
 .vbnb-lbl{font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;font-family:'Montserrat',sans-serif}
 .vbnb-val{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:rgba(255,255,255,0.75)}
+.vbnb-desc{font-size:10px;color:rgba(255,255,255,0.32);margin-top:5px;line-height:1.5}
+.vbn-main-desc{font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px;line-height:1.5}
 .disclaimer-band{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:10px 16px;margin-top:16px;font-size:11px;color:rgba(255,255,255,0.28);line-height:1.6}
 /* risk grid */
 .risk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
@@ -158,7 +160,17 @@ body{font-family:'Open Sans',sans-serif;background:var(--off-white);color:var(--
 .risk-card.red{border-top-color:var(--red)}
 .rc-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:'Montserrat',sans-serif}
 .rc-score{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:2px}
-.rc-desc{font-size:11px;color:var(--muted)}
+.rc-desc{font-size:11px;color:var(--muted);margin-bottom:6px}
+.rc-tip{font-size:11px;color:var(--text);line-height:1.55;padding-top:7px;border-top:1px solid var(--border)}
+.score-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:14px 20px}
+.sl-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)}
+.sl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sl-dot.green{background:var(--green)}.sl-dot.amber{background:var(--amber)}.sl-dot.red{background:var(--red)}
+.sl-label{font-weight:700;font-family:'Montserrat',sans-serif}
+.metrics-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.metric-pill{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:8px 14px;flex:1;min-width:140px}
+.mp-term{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:3px;font-family:'Montserrat',sans-serif}
+.mp-def{font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5}
 .result-section{background:#fff;border:1px solid var(--border);border-radius:6px;padding:22px 26px;margin-bottom:18px}
 .rs-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--blue-pale)}
 .driver-row{margin-bottom:12px}
@@ -737,12 +749,19 @@ body{font-family:'Open Sans',sans-serif;background:var(--off-white);color:var(--
       <div>
         <div class="vbn-lbl">Estimated Enterprise Value Range</div>
         <div class="vbn-main" id="r-val">&mdash;</div>
+        <div class="vbn-main-desc">What a buyer would likely pay for 100% of your business, based on your earnings and risk profile.</div>
       </div>
-      <div class="vbn-box"><div class="vbnb-lbl">Your Equity Stake</div><div class="vbnb-val" id="r-equity">&mdash;</div></div>
-      <div class="vbn-box"><div class="vbnb-lbl">EBITDA Multiple</div><div class="vbnb-val" id="r-multiple">&mdash;</div></div>
-      <div class="vbn-box"><div class="vbnb-lbl">Normalized EBITDA</div><div class="vbnb-val" id="r-ebitda">&mdash;</div></div>
+      <div class="vbn-box"><div class="vbnb-lbl">Your Equity Stake</div><div class="vbnb-val" id="r-equity">&mdash;</div><div class="vbnb-desc">Your personal share of the enterprise value midpoint, based on your ownership %.</div></div>
+      <div class="vbn-box"><div class="vbnb-lbl">EBITDA Multiple</div><div class="vbnb-val" id="r-multiple">&mdash;</div><div class="vbnb-desc">The earnings multiplier applied to your business — set by industry norms and adjusted for your risk score.</div></div>
+      <div class="vbn-box"><div class="vbnb-lbl">Normalized EBITDA</div><div class="vbnb-val" id="r-ebitda">&mdash;</div><div class="vbnb-desc">Your true annual earnings: Net income + interest + depreciation + amortization, restated for business economics.</div></div>
     </div>
     <div class="disclaimer-band">&#9432; This valuation range is an estimate based on the financial data and qualitative inputs you provided. It uses industry-standard EBITDA multiples and risk-factor scoring. It is not a formal appraisal and should not be used as a substitute for a certified business valuation. Brock Alspaugh will review your results and discuss next steps.</div>
+  </div>
+
+  <div class="score-legend">
+    <div class="sl-item"><div class="sl-dot green"></div><span><span class="sl-label">Strong (70&ndash;100)&nbsp;&mdash;</span> This factor adds value and will read positively in buyer due diligence.</span></div>
+    <div class="sl-item"><div class="sl-dot amber"></div><span><span class="sl-label">Moderate (45&ndash;69)&nbsp;&mdash;</span> Room for improvement; addressing this before listing can lift your multiple.</span></div>
+    <div class="sl-item"><div class="sl-dot red"></div><span><span class="sl-label">Needs Work (0&ndash;44)&nbsp;&mdash;</span> Actively compresses your valuation; a high-priority area to focus on.</span></div>
   </div>
 
   <div class="risk-grid" id="r-risk-grid"></div>
@@ -1284,19 +1303,28 @@ function buildResults(){
   document.getElementById('r-ebitda').textContent=fmtCurrency(ebitda);
 
   var riskDefs=[
-    {key:'custConc',label:'Customer Concentration',icon:'\ud83d\udc65'},
-    {key:'revQuality',label:'Revenue Quality',icon:'\ud83d\udd04'},
-    {key:'ownerDep',label:'Owner Dependency',icon:'\ud83d\udc64'},
-    {key:'keyEmpDep',label:'Key Employee Risk',icon:'\ud83c\udfe2'},
-    {key:'buySell',label:'Buy-Sell Protection',icon:'\ud83d\udd12'},
-    {key:'finRecords',label:'Financial Quality',icon:'\ud83d\udcca'},
-    {key:'vendorDep',label:'Vendor Dependency',icon:'\ud83d\udd17'},
-    {key:'custCount',label:'Customer Diversity',icon:'\ud83c\udf10'}
+    {key:'custConc',label:'Customer Concentration',icon:'\ud83d\udc65',
+     tips:['Revenue is spread across many clients \u2014 no single customer creates outsized buyer risk.','Some concentration exists. Diversifying your client base before exit strengthens your multiple.','Top customers represent a large share of revenue. Buyers apply a discount for this concentration risk.']},
+    {key:'revQuality',label:'Revenue Quality',icon:'\ud83d\udd04',
+     tips:['Predictable, recurring revenue makes your business highly attractive and commands premium pricing.','A mix of recurring and one-time revenue. Shifting more clients to retainers or subscriptions increases value.','Mostly project or one-time revenue. Recurring revenue models typically trade 1\u20132x higher.']},
+    {key:'ownerDep',label:'Owner Dependency',icon:'\ud83d\udc64',
+     tips:['The business operates without heavy reliance on you \u2014 buyers pay a premium for this independence.','Some owner dependency exists. Building systems and delegating key decisions will increase your multiple.','The business relies heavily on your personal involvement. This is the most common value risk buyers cite.']},
+    {key:'keyEmpDep',label:'Key Employee Risk',icon:'\ud83c\udfe2',
+     tips:['Leadership depth protects value \u2014 your business does not hinge on any single person leaving.','A few key roles carry risk. Cross-training and documentation reduce buyer concern.','One or more employees are difficult to replace. Buyers factor this operational risk into their offer.']},
+    {key:'buySell',label:'Buy-Sell Protection',icon:'\ud83d\udd12',
+     tips:['A funded buy-sell agreement protects your equity stake from unexpected partner events.','Some protective agreements are in place. Review coverage amounts and funding with an advisor.','Without a buy-sell agreement, your equity is exposed to a partner\u2019s death, disability, or dispute.']},
+    {key:'finRecords',label:'Financial Quality',icon:'\ud83d\udcca',
+     tips:['Clean, CPA-reviewed financials signal credibility and help command higher, faster offers.','Financials are in reasonable shape. Formal CPA review will further strengthen buyer confidence.','Buyers price uncertainty into offers. Reviewed books for 2\u20133 years before exit is one of the highest-value improvements available.']},
+    {key:'vendorDep',label:'Vendor Dependency',icon:'\ud83d\udd17',
+     tips:['Diversified supply chain \u2014 no single vendor creates material disruption risk for buyers.','Some vendor concentration exists. Qualifying backup suppliers reduces this operational risk.','Heavy reliance on one or more vendors is seen as a business continuity risk during due diligence.']},
+    {key:'custCount',label:'Customer Diversity',icon:'\ud83c\udf10',
+     tips:['A broad customer base supports premium pricing and reduces the impact of any single client loss.','A moderate customer base. Growing the number of active accounts improves stability and value.','Fewer customers means each relationship lost has an outsized revenue impact \u2014 a red flag for buyers.']}
   ];
   var rh='',dh='';
   riskDefs.forEach(function(d){
     var s=sc[d.key],cls=s>=70?'green':s>=45?'amber':'red',lbl=s>=70?'Strong':s>=45?'Moderate':'Needs Work';
-    rh+='<div class="risk-card '+cls+'"><div class="rc-lbl">'+d.label+'</div><div class="rc-score">'+s+'/100</div><div class="rc-desc">'+lbl+'</div></div>';
+    var tipIdx=s>=70?0:s>=45?1:2;
+    rh+='<div class="risk-card '+cls+'"><div class="rc-lbl">'+d.label+'</div><div class="rc-score">'+s+'/100</div><div class="rc-desc">'+lbl+'</div><div class="rc-tip">'+d.tips[tipIdx]+'</div></div>';
     dh+='<div class="driver-row"><div class="dr-top"><span class="dr-name">'+d.icon+' '+d.label+'</span><span class="dr-val">'+s+'/100</span></div><div class="dr-bar"><div class="dr-fill '+cls+'" style="width:'+s+'%"></div></div></div>';
   });
   document.getElementById('r-risk-grid').innerHTML=rh;
