@@ -6,6 +6,7 @@
 <title>Business Valuation Tool | Alspaugh Wealth Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{--charcoal:#1e2022;--char-dark:#111314;--blue:#29abe2;--blue-dk:#1a8fc4;--blue-pale:#e8f6fd;--white:#ffffff;--off-white:#f4f6f8;--border:#e0e4e8;--text:#1e2022;--muted:#6c7a8a;--red:#e53935;--amber:#f59e0b;--green:#16a34a}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -1156,40 +1157,66 @@ function handleDocUpload(file){
   var status=document.getElementById('uploadStatus');
   status.style.display='block';
   status.className='upload-status loading';
-  status.innerHTML='<div class="mini-spin"></div> Reading document with AI\u2026 may take 15\u201330 seconds.';
+  status.innerHTML='<div class="mini-spin"></div> Reading PDF\u2026';
   var reader=new FileReader();
   reader.onload=async function(e){
-    var b64=e.target.result.split(',')[1];
-    var mediaType=file.type||'application/pdf';
-    if(mediaType!=='application/pdf'&&!mediaType.startsWith('image/')){
-      status.className='upload-status error';
-      status.innerHTML='Please upload a PDF, image, or Excel/CSV file.';
-      return;
-    }
     try{
-      var resp=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',
-          max_tokens:800,
-          messages:[{role:'user',content:[
-            {type:'document',source:{type:'base64',media_type:mediaType,data:b64}},
-            {type:'text',text:'Extract financial figures. Return ONLY valid JSON, no explanation:\n{"revenue":0,"cogs":0,"operating_expenses":0,"interest_expense":0,"depreciation":0,"amortization":0,"total_assets":0,"total_liabilities":0}'}
-          ]}]
-        })
-      });
-      var data=await resp.json();
-      var text=(data.content||[]).map(function(x){return x.text||'';}).join('');
-      var match=text.match(/\{[\s\S]*?\}/);
-      if(match) applyExtracted(JSON.parse(match[0]),status);
-      else throw new Error('no json');
+      // Configure PDF.js worker
+      if(typeof pdfjsLib==='undefined') throw new Error('PDF library not loaded');
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      var typedArray=new Uint8Array(e.target.result);
+      var pdf=await pdfjsLib.getDocument({data:typedArray}).promise;
+      var fullText='';
+      for(var i=1;i<=pdf.numPages;i++){
+        var page=await pdf.getPage(i);
+        var content=await page.getTextContent();
+        // Preserve rough line structure by grouping items with similar Y coordinates
+        var items=content.items;
+        var lines={};
+        items.forEach(function(item){
+          var y=Math.round(item.transform[5]);
+          if(!lines[y]) lines[y]=[];
+          lines[y].push(item.str);
+        });
+        Object.keys(lines).sort(function(a,b){return b-a;}).forEach(function(y){
+          fullText+=lines[y].join(' ')+'\n';
+        });
+      }
+      var rows=parsePdfText(fullText);
+      var extracted=matchFinancials(rows);
+      applyExtracted(extracted,status);
     } catch(err){
       status.className='upload-status error';
-      status.innerHTML='Could not read document automatically. Enter numbers manually on the next screen.';
+      status.innerHTML='Could not read PDF. Try saving as Excel/CSV, or enter numbers manually on the next screen.';
     }
   };
-  reader.readAsDataURL(file);
+  reader.readAsArrayBuffer(file);
+}
+
+function parsePdfText(text){
+  var rows=[];
+  var lines=text.split(/\n/);
+  lines.forEach(function(line,idx){
+    line=line.trim();
+    if(!line) return;
+    // Match: label followed by optional $ and a number (4+ digits, handles commas and parens for negatives)
+    var m=line.match(/^(.+?)\s+\$?\(?([\d,]{4,})(?:\.\d+)?\)?(?:\s|$)/);
+    if(m){
+      var label=m[1].trim().toLowerCase();
+      var val=parseFloat(m[2].replace(/,/g,''));
+      if(label.length>2&&val>0) rows.push({label:label,val:val});
+    }
+    // Also handle: label on one line, number on the very next line
+    if(idx<lines.length-1&&!/[\d,]{4,}/.test(line)){
+      var next=lines[idx+1].trim();
+      var nm=next.match(/^\$?\(?([\d,]{4,})(?:\.\d+)?\)?$/);
+      if(nm){
+        var val2=parseFloat(nm[1].replace(/,/g,''));
+        if(val2>0) rows.push({label:line.toLowerCase(),val:val2});
+      }
+    }
+  });
+  return rows;
 }
 
 function applyExtracted(d,status){
