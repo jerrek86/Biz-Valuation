@@ -13,7 +13,7 @@ window.BIZVAL_CONFIG = {
   phone: "(555) 555-0100",
   email: "advisor@example.com",         // used for the "Schedule" button if no bookingUrl
   logoUrl: "",                          // e.g. "logo.png" (light/white logo on dark header). Blank = firm name as text
-  primaryColor: "#29abe2",              // accent color (hex)
+  primaryColor: "#5b5bd6",              // accent color (hex) — pick something distinct per advisor
 
   // ── Lead handling ──
   bookingUrl: "",                       // Calendly / scheduling link for the "Schedule My Review" button
